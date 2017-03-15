@@ -1,0 +1,68 @@
+
+/**
+*@description: tries to merge part1 and part2 to form s
+*@algorithm: if part1 and part2 are equal, set a backup point; add it to array of backup points
+*   -check to see if part1s current char === s's current char: part1char++
+    -check to see if part2s current char === s's current char: part2char++
+    -else check to see if we have backtrack points
+        -reset position to backtrack point
+        -then repeat with part2 for current s
+**/
+function isMerge(s, part1, part2) {
+    var part1char = 0;
+    var part2char = 0;
+    var mergable = true;
+    var backtrackPoints = [];
+    var backtrack = false;
+    var backtrackObj = {
+        iter: 0,
+        p1: 0,
+        p2: 0
+    };
+
+    if (part1.length + part2.length === s.length) {
+        for (let i = 0; i < s.length; i++) {
+            if (!backtrack) {
+                //if current chars are same as string set a backtrack point, add it to back of array of backtrack points
+                if (part1.charAt(part1char) === part2.charAt(part2char) && part2.charAt(part2char) ===  s.charAt(i)) {
+                    backtrackObj = {
+                        iter: i,
+                        p1: part1char,
+                        p2: part2char
+                    };
+                    backtrackPoints.push(backtrackObj);
+                }
+
+                //process current charachter p1 first
+                if (s.charAt(i) === part1.charAt(part1char)) {
+                    part1char++;
+                } else if (s.charAt(i) === part2.charAt(part2char)) {
+                    part2char++;
+                } else if (backtrackPoints.length > 0) {
+                    backtrack = true;
+                } else {
+                    mergable = false;
+                    break;
+                }
+
+            } else {
+                //reset the explorer to be at the last backtrack point, use part2 this time
+                backtrack = false;
+                //reset position to backtrack point
+                i = backtrackPoints[backtrackPoints.length - 1].iter;
+                part1char = backtrackPoints[backtrackPoints.length - 1].p1;
+                part2char = backtrackPoints[backtrackPoints.length - 1].p2;
+                backtrackPoints.pop();
+                //accept part2 char and move forward
+                part2char++;
+            }
+        }
+    }
+    else {
+        return false;
+    }
+
+    return mergable;
+}
+
+isMerge('Bananas from Bahamas', 'Bahas', 'Bananas from am');
