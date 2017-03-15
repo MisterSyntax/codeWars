@@ -1,0 +1,31 @@
+
+/**
+*@algo: check to see if the length of the 2 parts equals the whole. else return false;
+* -If s[0] == part1[0], called isMerge passing substrings of those
+* -continue doing that until s[0] != part1[0]
+* -then if s[0] == part2[0] do that
+* -recursively backtrack until it works
+* -then call again at new position
+* -keep doing this until s.length === 0 as well as part1 and part2's length
+**/
+
+
+function isMerge(s, part1, part2) {
+	//if s is empty we've made it to the end and should set passed to true (!undefined)
+    var passed = false;	
+    if (s.length === part1.length + part2.length) {
+    
+		if (part1.length > 0 || part2.length > 0) {
+			if (s[0] === part1[0]) {
+				passed = isMerge(s.slice(1), part1.slice(1), part2);
+			}
+			if (!passed && s[0] === part2[0]) {
+				passed = isMerge(s.slice(1), part1, part2.slice(1));console.log('f2');
+			}
+		}
+    }
+    if(s.length === part1.length && part1.length === part2.length && part2.length === 0){
+       passed = true;
+    }
+    return passed;
+}
