@@ -1,0 +1,56 @@
+/**
+*@description: Takes in a string of observed numbers, each of those numbers can be adjacent on a keypad, looks for all possible combos that could be the pin
+*@param {string} oberved - a possible code that we need to check for all the potential codes for
+*@returns {array} - returns an array of possible strings
+*/
+function getPINs(observed) {
+    var adjacentNumbers = {
+        "1": ["1", "2", "4"],
+        "2": ["1", "2", "3", "5"],
+        "3": ["2", "3", "6"],
+        "4": ["1", "4", "5", "7"],
+        "5": ["2", "4", "5", "6", "8"],
+        "6": ["3", "5", "6", "9"],
+        "7": ["4", "7", "8"],
+        "8": ["0", "5", "7", "8", "9"],
+        "9": ["6", "8", "9"],
+        "0": ["0", "8"]
+    };
+    var potentialCodes = [""];
+    var potentialArray = [""];
+
+    /**
+     *@description: takes an array of strings and appends the endChars to each of the strings e.g. ["1","2"],["1","2"] -> ["11","12","21","22"]
+     *@param {array} strs - an array of strings that we want to add a char to the end of each to, in order to get new strings
+     *@param {array} endChars - an array of strings to add to the end of sts
+     *@returns {array} - returns an array of strings
+    */
+    function createPinArray(strs, endChars) {
+        var newStrings = [];
+        var i = 0;
+        var index = 0;
+        /**Iterates through each of the current substrings and adds a endChar to each, returns that array */
+        do {
+            for (let j = 0; j < endChars.length; j++) {
+                newStrings[index] = strs[i] + endChars[j];
+                index++;
+            }
+
+            i++;
+        } while (i < strs.length);
+
+        return newStrings;
+    }
+
+
+    //create an array with the end chars for each entry
+    for (let i = 0; i < observed.length; i++) {
+        potentialArray[i] = adjacentNumbers[observed.charAt(i)];
+    }
+    //run the createPinArray with the substrings created thus far, and the potential next chars
+    for (let i = 0; i < potentialArray.length; i++) {
+        potentialCodes = createPinArray(potentialCodes, potentialArray[i]);
+    }
+    return potentialCodes;
+}
+getPINs("11");
