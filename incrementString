@@ -1,0 +1,44 @@
+/**
+*@description: looks to see if passed string ends in a number. if it does, increment that number by one. 
+* If it does not, ad a 1 to the end
+*@param {string} strng - the string we want to evaluate
+*@returns {string} - the string that has been incremented
+*/
+
+function incrementString (strng) {
+  var endDigits;
+  var frontChars;
+  var leadingZeros;
+  var numberSize
+  var matches;
+
+  /** Cut up the string */
+  matches = strng.match(/^(.*?)(\d*)$/);
+  frontChars = matches[1];
+  endDigits = matches[2];
+  numberSize = endDigits.length;
+  
+  /**If the last char is a 9 the length of the number gets increased by 1 */
+  if(endDigits.slice(-1) === 9){
+    numberSize += 1;
+  }
+  
+  /**Convert and Increment the number at the end */
+  endDigits = Number(endDigits);
+  if(endDigits >= 0){
+    endDigits += 1;
+  }
+  else{
+    endDigits = "1";
+  }
+
+  //Reappend any leading 0s
+  endDigits = endDigits.toString();
+  while(endDigits.length < numberSize){
+    endDigits = "0"+ endDigits;
+  }
+  strng = frontChars + endDigits;
+  
+  return strng;
+  // return incrementedString
+}
