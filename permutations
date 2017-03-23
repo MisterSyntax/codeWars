@@ -1,0 +1,39 @@
+
+/**
+ * @description: create all permutations of an input string and remove duplicates, if present. This means, you have to shuffle all letters from the input in all possible orders.
+ * @param {string} - string : a string we want to get all permutations of 
+ * @returns {array} - returns an array of strings that compose the permutatons
+ */
+function permutations(string) {
+    var childStrings = [];
+    var subStrings = [];
+    var currentChar = "";
+    var stringWithCurrent = "";
+    var exists = {}
+
+    /**
+     * create all the permutations 
+     * iterates through the chars, and recursively calls the function on the string minus the front char. Then adds the front char to all the returned permutations
+    */
+    for (var i = 0; i < string.length; i++) {
+        currentChar = string[i];
+        stringWithCurrent = string.slice(0, i) + string.slice(i + 1);
+        subStrings = permutations(stringWithCurrent);
+
+        //**if there is a one char string we just return the current char */
+        if (subStrings.length === 0) {
+            childStrings.push(currentChar);
+        }
+        //otherwise we add the curr char to all substrings and return that
+        else {
+            subStrings.forEach(function (current) {
+                childStrings.push(currentChar + current);
+            });
+        }
+
+    }
+    /**remove duplicates */
+    return childStrings.filter(function(value){
+        return exists[value] ? false : (exists[value] = true);
+    });
+}
