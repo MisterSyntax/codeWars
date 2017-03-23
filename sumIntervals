@@ -1,0 +1,74 @@
+/**
+*@description: Takes in a list of lists, looks for all the intervals and sums them. Overlapping intervals don't get summed twice:
+[
+   [1,4],
+   [7, 10],
+   [3, 5]
+] -> 7
+*@param {array} oberved - an array of arrays of length 2. each sub-array is an interval
+*@returns {integer} - the total distance of the intervals
+*/
+function sumIntervals(intervals) {
+    var floor = 0;
+    var currentPrev = -1;
+    var goodPrev = true;
+
+    //sort the intervals;
+    intervals.sort(function (a, b) {
+        //sort by first digit in the pair
+        if (a[0] - b[0] !== 0) {
+            return a[0] - b[0];
+        }
+        //if those are equal sort by second digit in the pair
+        return a[1] - b[1];
+    });
+
+    /**filter out any irrelevant values*/
+
+    intervals = intervals.filter(function (current, index, arr) {
+
+        var next = arr[index + 1];
+        var prev = goodPrev ? arr[index - 1]: currentPrev;
+
+        //if the next element in the array has the same starting value and a greater end value. Filter current element out
+        if (next && current[0] === next[0] && current[1] < next[1]) {
+            currentPrev = prev;
+            goodPrev = false;
+            return false;
+        }
+
+        //if the previous element has an equal higher end point than current one, filter this one out
+        else if (prev && prev[1] >= current[1]) {
+            currentPrev = prev;
+            goodPrev = false;
+            return false;
+        }
+        currentPrev = current;
+        goodPrev = true;
+
+        return true;
+    });
+
+    /**Combine any overlapping values */
+    for (let i = 0; i < intervals.length; i++) {
+        let curr = intervals[i];
+        let next = intervals[i + 1];
+        //if next value in intervals has a lower start number, and a higher end number combine with current values
+        //e.g. [1,4],[3,6]=>[1,6]
+        if (next && next[0] <= curr[1]) {
+            curr[1] = next[1];
+            intervals.splice(i + 1, 1);
+        }
+    }
+
+    //sum each of the intervals making sure not to  and then add the intervals
+    intervals = intervals.map(function (current){
+        return current[1] - current[0];
+    }).reduce((prev, curr) => { return prev + curr; })
+
+    return intervals;
+
+}
+console.log(sumIntervals([[1, 5], [3, 6]]) === 5 ? 'yay' : 'buu');
+console.log(sumIntervals([[1, 5], [1, 5]]) === 4 ? 'yay' : 'expected 4, saw: ' + sumIntervals([[1, 5], [1, 5]]));
+console.log(sumIntervals([ [ 1, 12 ], [ 3, 6 ], [ 5, 8 ], [ 7, 10 ], [ 9, 12 ] ]) === 11 ? 'yay' :'expected 11, saw: ' + sumIntervals([[ 1, 12 ], [ 3, 6 ], [ 5, 8 ], [ 7, 10 ], [ 9, 12 ] ]));
