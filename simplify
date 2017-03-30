@@ -1,0 +1,93 @@
+
+/**
+ * @description: reduce polynomials to their simpilest form
+ * @example: "3x-yx+2xy-x"  
+ * @param {string} poly - the polynomial to return
+ * @returns {string} the reduced polynomial
+ */
+
+function simplify(poly) {
+    var polyObj = {};
+    var returnOrder = [];
+    var output = "";
+    function removeDuplicates(arr) {
+        var seen = {};
+        return arr.filter((curr) =>
+            seen[curr] ? false : seen[curr] = 1
+        );
+    }
+
+    /**split the poly into an Array of positive(unsigned) and negative(-)strings*/
+    poly = poly.replace(/-/g, "+-").split(/\+/).filter((x) => { return x !== "" });
+
+
+    /**for each of the polyElements alphabetically sort the letters in the array */
+    poly = poly.map(current => current.split("")
+        .sort((curr, next) => { return (curr.charCodeAt(0) > next.charCodeAt(0) && curr.charAt(0).match(/[a-z]/)) ? true : false })
+        .join("")
+        .replace(/^(.*)-/, "-$1"));
+
+    /**create a return order by sorting the unique instances of each string by length and by alphabet*/
+    returnOrder = poly;
+    returnOrder = removeDuplicates(returnOrder.map(curr => curr.replace(/^[-\d]*/, "")));
+    /**sorts the return order by length small to large, then alphabetical*/
+    returnOrder.sort(function (curr, next) {
+        if (curr.length > next.length) {
+            return true;
+        }
+        else if (curr.length === next.length) {
+            if (curr > next) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    });
+
+    /**take the array and turn it into an object */
+    poly.forEach((curr) => {
+        let accumulator;
+        /**If it's a negative we strip out the negative and get ready to subtract 1 from total  */
+        curr.charAt(0) === "-" ? (accumulator = -1, curr = curr.slice(1)) : accumulator = 1;
+
+        /**if the string starts with a number we multiply that by out accumulator*/
+        accumulator = curr.match(/^(\d+)/) ? curr.match(/^(\d+)/)[1] * accumulator : accumulator;
+
+        /**strip out the digit from the string */
+        curr = curr.replace(/^\d*/,"");
+
+        /**increment or decrement the number of instances of each obj */
+        polyObj[curr] ? (polyObj[curr] = polyObj[curr] + accumulator) : polyObj[curr] = accumulator;
+    });
+
+
+    //remove any entries from return order that are set to 0 in our tracking obj
+    returnOrder.filter(curr => {
+        return polyObj[curr] !== 0;
+    });
+
+
+    /**create the return string */
+    returnOrder.forEach((curr)=>{
+        if(polyObj[curr] === 1){
+            output += "+" + curr;
+        }
+        else if(polyObj[curr] === -1){
+            output += "-" +curr;
+        }
+        else if(polyObj[curr] > 1){
+            output += "+" + polyObj[curr] + curr;
+        }
+        else if(polyObj[curr] < -1){
+            output += polyObj[curr] + curr;
+        }
+    });
+
+    /**strip off leading + */
+    output = output.replace(/^\+/,"");
+    return output;
+}
